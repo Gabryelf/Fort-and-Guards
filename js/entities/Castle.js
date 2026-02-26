@@ -1,51 +1,47 @@
 class Castle {
     constructor(game) {
         this.game = game;
-        this.health = 100;
-        this.maxHealth = 100;
-        this.damage = 10;
-        this.attackRange = 200;
-        this.attackSpeed = 1;
+        
+        // Используем конфиг
+        this.config = GameConfig.castle;
+        
+        this.health = this.config.baseHealth;
+        this.maxHealth = this.config.baseHealth;
+        this.damage = this.config.baseDamage;
+        this.attackRange = this.config.baseAttackRange;
+        this.attackSpeed = this.config.baseAttackSpeed;
         this.attackCooldown = 0;
-        this.criticalChance = 0.1;
-        this.criticalMultiplier = 2;
+        this.criticalChance = this.config.criticalChance;
+        this.criticalMultiplier = this.config.criticalMultiplier;
         
         this.element = document.getElementById('castle');
         this.towers = 1;
-        this.maxTowers = 4;
+        this.maxTowers = this.config.maxTowers;
         
         this.createAttackRangeVisual();
-        console.log('Castle created with attack range:', this.attackRange);
     }
 
     createAttackRangeVisual() {
-        // Создаем визуализацию радиуса атаки
         this.rangeVisual = document.createElement('div');
         this.rangeVisual.className = 'attack-range-visual';
-        this.rangeVisual.style.position = 'absolute';
-        this.rangeVisual.style.left = '0';
-        this.rangeVisual.style.top = '50%';
-        this.rangeVisual.style.transform = 'translateY(-50%)';
-        this.rangeVisual.style.width = this.attackRange + 'px';
-        this.rangeVisual.style.height = '200px';
-        this.rangeVisual.style.background = 'radial-gradient(circle, rgba(76, 201, 240, 0.2) 0%, rgba(76, 201, 240, 0) 70%)';
-        this.rangeVisual.style.border = '2px dashed rgba(76, 201, 240, 0.5)';
-        this.rangeVisual.style.borderRadius = '0 100px 100px 0';
-        this.rangeVisual.style.pointerEvents = 'none';
-        this.rangeVisual.style.zIndex = '1';
-        
         this.game.uiManager.gameField.appendChild(this.rangeVisual);
         this.updateRangeVisualPosition();
     }
 
     updateRangeVisualPosition() {
-        if (!this.rangeVisual) return;
+        if (!this.rangeVisual || !this.element) return;
         
-        const castleRect = this.getBoundingRect();
-        this.rangeVisual.style.left = castleRect.width + 'px';
-        this.rangeVisual.style.top = (castleRect.top - 100) + 'px';
-        this.rangeVisual.style.width = this.attackRange + 'px';
-        this.rangeVisual.style.height = (castleRect.height + 200) + 'px';
+        const castleRect = this.element.getBoundingClientRect();
+        const gameFieldRect = this.game.uiManager.gameField.getBoundingClientRect();
+        
+        // Корректируем позицию относительно gameField
+        const relativeLeft = castleRect.left - gameFieldRect.left + castleRect.width;
+        const relativeTop = castleRect.top - gameFieldRect.top - 100;
+        
+        this.rangeVisual.style.left = `${relativeLeft}px`;
+        this.rangeVisual.style.top = `${relativeTop}px`;
+        this.rangeVisual.style.width = `${this.attackRange}px`;
+        this.rangeVisual.style.height = `${castleRect.height + 200}px`;
     }
 
     update(deltaTime) {
@@ -67,9 +63,13 @@ class Castle {
     attack() {
         const target = this.findTarget();
         if (target) {
-            console.log('Castle attacking enemy at distance:', this.calculateDistance(target));
             for (let i = 0; i < this.towers; i++) {
-                this.game.projectiles.push(new Projectile(this.game, this, target));
+                // Небольшая задержка между выстрелами из разных башен
+                setTimeout(() => {
+                    if (!target.isDead && this.game.gameState === 'playing') {
+                        this.game.projectiles.push(new Projectile(this.game, this, target));
+                    }
+                }, i * 50);
             }
         }
     }
@@ -90,17 +90,17 @@ class Castle {
     }
 
     calculateDistance(enemy) {
-        const castleRect = this.getBoundingRect();
-        const enemyRect = enemy.getBoundingRect();
+        const castleRect = this.element.getBoundingClientRect();
+        const enemyRect = enemy.element.getBoundingClientRect();
         
         const castleCenter = {
-            x: castleRect.x + castleRect.width,
-            y: castleRect.y + castleRect.height / 2
+            x: castleRect.left + castleRect.width,
+            y: castleRect.top + castleRect.height / 2
         };
         
         const enemyCenter = {
-            x: enemyRect.x + enemyRect.width / 2,
-            y: enemyRect.y + enemyRect.height / 2
+            x: enemyRect.left + enemyRect.width / 2,
+            y: enemyRect.top + enemyRect.height / 2
         };
         
         return Math.sqrt(
@@ -111,19 +111,32 @@ class Castle {
 
     takeDamage(amount) {
         this.health -= amount;
-        console.log('Castle took damage:', amount, 'Health remaining:', this.health);
         if (this.health < 0) this.health = 0;
+        
+        // Визуальный эффект
+        this.element.style.animation = 'damageFlash 0.3s';
+        setTimeout(() => {
+            this.element.style.animation = '';
+        }, 300);
     }
 
     getBoundingRect() {
-        return this.element.getBoundingClientRect();
+        const rect = this.element.getBoundingClientRect();
+        const gameFieldRect = this.game.uiManager.gameField.getBoundingClientRect();
+        
+        return {
+            x: rect.left - gameFieldRect.left,
+            y: rect.top - gameFieldRect.top,
+            width: rect.width,
+            height: rect.height
+        };
     }
 
     reset() {
         this.health = this.maxHealth;
         this.towers = 1;
         if (this.rangeVisual) {
-            this.rangeVisual.style.width = this.attackRange + 'px';
+            this.rangeVisual.style.width = `${this.attackRange}px`;
         }
     }
 }

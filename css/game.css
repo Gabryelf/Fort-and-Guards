@@ -319,13 +319,249 @@
     color: #7de2fc;
 }
 
-/* Визуализация радиуса атаки замка */
+/* Анимация получения урона замком */
+@keyframes damageFlash {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5) drop-shadow(0 0 10px red); }
+}
+
+/* Улучшенная визуализация радиуса атаки */
 .attack-range-visual {
     position: absolute;
     background: radial-gradient(circle, rgba(76, 201, 240, 0.15) 0%, rgba(76, 201, 240, 0) 70%);
     border: 2px dashed rgba(76, 201, 240, 0.4);
-    border-radius: 0 100px 100px 0;
+    border-left: 3px solid rgba(76, 201, 240, 0.6);
     pointer-events: none;
     z-index: 2;
     box-shadow: 0 0 20px rgba(76, 201, 240, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Анимация атаки защитников */
+.defender.attacking {
+    animation: attack 0.2s ease;
+}
+
+@keyframes attack {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Улучшенные стили для врагов с текстом здоровья */
+.enemy {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    z-index: 15;
+    transition: all 0.2s ease;
+}
+
+.enemy::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255,0,0,0.5);
+    border-radius: 2px;
+}
+
+.enemy::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: calc(100% * var(--health-percent, 1));
+    height: 4px;
+    background: #4CAF50;
+    border-radius: 2px;
+    z-index: 1;
+    transition: width 0.2s ease;
+}
+
+/* Стили для снарядов */
+.projectile {
+    position: absolute;
+    pointer-events: none;
+    transition: transform 0.05s linear;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+}
+
+.projectile.critical {
+    filter: drop-shadow(0 0 10px rgba(255,0,0,0.8));
+    animation: projectileGlow 0.3s infinite alternate;
+}
+
+@keyframes projectileGlow {
+    from { filter: drop-shadow(0 0 5px rgba(255,0,0,0.5)); }
+    to { filter: drop-shadow(0 0 15px rgba(255,0,0,1)); }
+}
+
+/* Индикатор здоровья на врагах */
+.enemy-health-bar {
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.enemy-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.2s ease;
+}
+
+/* Индикатор здоровья врагов */
+.enemy-health-bar {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.enemy-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4444, #ff8888);
+    transition: width 0.2s ease;
+}
+
+/* Индикатор здоровья защитников */
+.defender-health-bar {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.defender-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.2s ease;
+}
+
+/* Анимация ходьбы врагов */
+.enemy {
+    transition: top 0.1s ease;
+}
+
+/* Эффект попадания */
+.enemy.hit {
+    animation: enemyHit 0.2s ease;
+}
+
+@keyframes enemyHit {
+    0%, 100% { 
+        filter: brightness(1);
+        transform: scaleX(-1) scale(1);
+    }
+    50% { 
+        filter: brightness(2) drop-shadow(0 0 5px white);
+        transform: scaleX(-1) scale(1.2);
+    }
+}
+
+/* Анимация смерти */
+.enemy.dead {
+    animation: enemyDeath 0.4s ease forwards;
+}
+
+@keyframes enemyDeath {
+    0% { 
+        opacity: 1;
+        transform: scaleX(-1) scale(1);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: scaleX(-1) scale(1.5);
+    }
+    100% { 
+        opacity: 0;
+        transform: scaleX(-1) scale(0);
+    }
+}
+
+/* Анимация защитников */
+.defender.attacking {
+    animation: defenderAttack 0.2s ease;
+}
+
+@keyframes defenderAttack {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.defender {
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* Стили для отзеркаленных спрайтов */
+.enemy[style*="scaleX(-1)"] {
+    /* Дополнительные стили для отзеркаленных врагов */
+}
+
+/* Анимация движения */
+.defender {
+    transition: left 0.1s linear;
+}
+
+.defender.moving {
+    animation: walk 0.3s infinite alternate;
+}
+
+@keyframes walk {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3px); }
+}
+
+/* Стили для разных типов защитников */
+.defender.archer {
+    /* Специфичные стили для лучника */
+}
+
+.defender.knight {
+    /* Специфичные стили для рыцаря */
+}
+
+/* Индикатор здоровья защитников */
+.defender-health-bar {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.defender-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.2s ease;
+}
+
+/* Анимация атаки */
+.defender.attacking {
+    animation: attackAnim 0.2s ease;
+}
+
+@keyframes attackAnim {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
 }

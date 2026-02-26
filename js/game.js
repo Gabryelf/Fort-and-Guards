@@ -2,7 +2,7 @@ class Game {
     constructor() {
         this.canvas = null;
         this.ctx = null;
-        this.gameState = 'loading'; // loading, menu, playing, levelUp, gameOver
+        this.gameState = 'loading';
         this.lastTime = 0;
         this.deltaTime = 0;
         
@@ -12,6 +12,9 @@ class Game {
         this.projectiles = [];
         this.defenders = [];
         
+        // Специальные эффекты
+        this.isMoatActive = false;
+        
         // Менеджеры
         this.waveManager = null;
         this.uiManager = null;
@@ -19,15 +22,22 @@ class Game {
         this.yandexSDKManager = null;
         
         // Игровые ресурсы
-        this.coins = 0;
+        this.coins = 100;
         this.experience = 0;
         this.level = 1;
         this.experienceToNextLevel = 100;
         
-        this.init();
+        // Ждем загрузки DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
     }
 
     async init() {
+        console.log('Game initializing...');
+        
         // Инициализация Яндекс SDK
         this.yandexSDKManager = new YandexSDKManager(this);
         await this.yandexSDKManager.initialize();
@@ -49,6 +59,8 @@ class Game {
         
         // Запуск игрового цикла
         this.gameLoop();
+        
+        console.log('Game initialized');
     }
 
     setupEventListeners() {
@@ -66,62 +78,73 @@ class Game {
             this.uiManager.showScreen('mainMenu');
         });
 
-        // Кнопки улучшений
-        document.querySelectorAll('.upgradeBtn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const upgradeType = e.target.dataset.upgrade;
-                this.upgradeManager.purchaseUpgrade(upgradeType);
-            });
+        document.getElementById('rewardBtn').addEventListener('click', () => {
+            if (this.yandexSDKManager) {
+                this.yandexSDKManager.showRewardedAd();
+            }
         });
 
         // Карты улучшений при повышении уровня
         document.querySelectorAll('.upgradeCard').forEach(card => {
             card.addEventListener('click', (e) => {
-                const upgradeType = e.target.dataset.upgrade;
-                this.upgradeManager.applyLevelUpUpgrade(upgradeType);
-                this.uiManager.showScreen('gameScreen');
-                this.gameState = 'playing';
+                const upgradeType = card.dataset.upgrade;
+                console.log('Level up upgrade selected:', upgradeType);
+                if (upgradeType && this.upgradeManager) {
+                    this.upgradeManager.applyLevelUpUpgrade(upgradeType);
+                }
             });
         });
     }
 
     startGame() {
+        console.log('Starting new game...');
+        
         // Сброс состояния игры
-        this.coins = 0;
+        this.coins = 100;
         this.experience = 0;
         this.level = 1;
         this.experienceToNextLevel = 100;
+        this.isMoatActive = false;
+        
+        // Очистка массивов
+        this.enemies.forEach(enemy => enemy.element?.remove());
+        this.projectiles.forEach(p => p.element?.remove());
+        this.defenders.forEach(d => d.element?.remove());
         
         this.enemies = [];
         this.projectiles = [];
         this.defenders = [];
         
+        // Сброс объектов
         this.castle.reset();
         this.waveManager.reset();
+        this.upgradeManager.reset();
+        
+        // Пересоздаем обработчики кнопок улучшений
+        this.upgradeManager.setupEventListeners();
         
         // Показать игровой экран
         this.uiManager.showScreen('gameScreen');
         this.gameState = 'playing';
+        
+        // Обновляем HUD
+        this.uiManager.updateHUD();
     }
 
     gameLoop(currentTime = 0) {
         this.deltaTime = (currentTime - this.lastTime) / 1000;
         this.lastTime = currentTime;
 
-        // Ограничиваем deltaTime для избежания аномалий при переключении вкладок
         if (this.deltaTime > 0.1) this.deltaTime = 0.1;
 
         if (this.gameState === 'playing') {
             this.update();
-            this.render();
         }
 
         requestAnimationFrame((time) => this.gameLoop(time));
     }
 
     update() {
-        if (this.gameState !== 'playing') return;
-
         try {
             // Обновление волн
             this.waveManager.update(this.deltaTime);
@@ -149,7 +172,6 @@ class Game {
             
             // Проверка условий проигрыша
             if (this.castle.health <= 0 && this.gameState === 'playing') {
-                console.log('Castle destroyed! Game over.');
                 this.gameOver();
             }
         } catch (error) {
@@ -157,36 +179,22 @@ class Game {
         }
     }
 
-    gameOver() {
-        this.gameState = 'gameOver';
-        
-        // Сохраняем статистику
-        this.finalWave = this.waveManager.currentWave;
-        this.finalCoins = Math.floor(this.coins);
-        this.finalExp = Math.floor(this.experience);
-        
-        // Показываем экран окончания
-        this.uiManager.showGameOverScreen(this.finalWave, this.finalCoins, this.finalExp);
-        
-        // Сохраняем в лидерборд
-        if (this.yandexSDKManager.isInitialized) {
-            this.yandexSDKManager.setLeaderboardScore(this.finalWave);
-        }
-        
-        console.log('Game over screen shown');
-    }
-
-    render() {
-       
-    }
-
     checkCollisions() {
         // Проверка столкновений снарядов с врагами
         this.projectiles.forEach(projectile => {
+            if (projectile.isExpired) return;
+            
             this.enemies.forEach(enemy => {
-                if (this.isColliding(projectile, enemy)) {
+                if (enemy.isDead) return;
+                
+                const distance = Math.sqrt(
+                    Math.pow(projectile.x - enemy.x, 2) + 
+                    Math.pow(projectile.y - enemy.y, 2)
+                );
+                
+                if (distance < 30) {
                     enemy.takeDamage(projectile.damage);
-                    projectile.isExpired = true;
+                    projectile.expire();
                     
                     if (enemy.isDead) {
                         this.addCoins(enemy.reward);
@@ -198,34 +206,70 @@ class Game {
 
         // Проверка достижения врагами замка
         this.enemies.forEach(enemy => {
-            if (this.isColliding(enemy, this.castle)) {
+            if (enemy.isDead) return;
+            
+            const castleRect = this.castle.getBoundingRect();
+            const distance = Math.sqrt(
+                Math.pow(enemy.x - castleRect.x, 2) + 
+                Math.pow(enemy.y - castleRect.y, 2)
+            );
+            
+            if (distance < 50) {
                 this.castle.takeDamage(enemy.damage);
-                enemy.isDead = true;
+                enemy.die();
             }
         });
     }
 
-    isColliding(obj1, obj2) {
-        // Простая проверка столкновения прямоугольников
-        // В будущем можно заменить на более точную
-        const rect1 = obj1.getBoundingRect();
-        const rect2 = obj2.getBoundingRect();
+    spawnDefenders(count) {
+        console.log(`Spawning ${count} defenders`);
         
-        return rect1.x < rect2.x + rect2.width &&
-               rect1.x + rect1.width > rect2.x &&
-               rect1.y < rect2.y + rect2.height &&
-               rect1.y + rect1.height > rect2.y;
+        // Получаем размеры игрового поля
+        const gameField = document.getElementById('gameField');
+        const fieldRect = gameField.getBoundingClientRect();
+        
+        // Очищаем старых защитников
+        this.defenders.forEach(d => d.element?.remove());
+        this.defenders = [];
+        
+        // Позиции для защитников (перед замком)
+        const startX = 250;
+        const centerY = fieldRect.height / 2;
+        
+        for (let i = 0; i < count; i++) {
+            // Чередуем типы защитников
+            const type = i % 2 === 0 ? 'archer' : 'knight';
+            
+            // Рассчитываем позицию с вертикальным смещением
+            const x = startX + i * 70;
+            const y = centerY - 30 + (i * 30);
+            
+            // Проверяем, что y не выходит за границы
+            const clampedY = Math.max(50, Math.min(fieldRect.height - 100, y));
+            
+            console.log(`Creating defender ${type} at (${x}, ${clampedY})`);
+            
+            // Создаем защитника
+            const defender = new Defender(this, x, clampedY, type);
+            this.defenders.push(defender);
+        }
+        
+        console.log(`Total defenders: ${this.defenders.length}`);
     }
 
     addCoins(amount) {
         this.coins += amount;
+        this.uiManager.updateHUD();
     }
 
     addExperience(amount) {
         this.experience += amount;
-        if (this.experience >= this.experienceToNextLevel) {
+        
+        while (this.experience >= this.experienceToNextLevel) {
             this.levelUp();
         }
+        
+        this.uiManager.updateHUD();
     }
 
     levelUp() {
@@ -237,9 +281,20 @@ class Game {
         this.uiManager.showScreen('levelUpScreen');
     }
 
+    gameOver() {
+        this.gameState = 'gameOver';
+        
+        const finalWave = this.waveManager?.currentWave || 1;
+        const finalCoins = Math.floor(this.coins);
+        const finalExp = Math.floor(this.experience);
+        
+        this.uiManager.showGameOverScreen(finalWave, finalCoins, finalExp);
+        
+        if (this.yandexSDKManager?.isInitialized) {
+            this.yandexSDKManager.setLeaderboardScore(finalWave);
+        }
+    }
 }
 
-// Запуск игры при загрузке страницы
-window.addEventListener('load', () => {
-    window.game = new Game();
-});
+// Запуск игры
+window.game = new Game();

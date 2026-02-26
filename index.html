@@ -161,16 +161,22 @@
 
     <!-- Подключаем Яндекс SDK -->
     <script src="https://yandex.ru/games/sdk/v2"></script>
-    <!-- Подключаем наши скрипты -->
+    <!-- Подключаем конфиг ПЕРВЫМ -->
+    <script src="js/config/GameConfig.js"></script>
+    <!-- Подключаем утилиты -->
     <script src="js/utils/helpers.js"></script>
+    <script src="js/utils/SpriteLoader.js"></script>
+    <!-- Подключаем сущности -->
     <script src="js/entities/Castle.js"></script>
     <script src="js/entities/Enemy.js"></script>
     <script src="js/entities/Projectile.js"></script>
     <script src="js/entities/Defender.js"></script>
+    <!-- Подключаем менеджеры -->
     <script src="js/managers/WaveManager.js"></script>
     <script src="js/managers/UIManager.js"></script>
     <script src="js/managers/UpgradeManager.js"></script>
     <script src="js/managers/YandexSDKManager.js"></script>
+    <!-- Подключаем основной файл игры -->
     <script src="js/game.js"></script>
 </body>
 </html>
