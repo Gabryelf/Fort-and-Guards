@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Idle Tower Defense</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/screens.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Экран загрузки -->
+        <div id="loadingScreen" class="screen">
+            <div class="loader">🛡️ Загрузка замка...</div>
+        </div>
+
+        <!-- Главное меню -->
+        <div id="mainMenu" class="screen hidden">
+            <h1>ЗАМОК ЗАЩИТНИК</h1>
+            <div id="playerName">🏰 Игрок</div>
+            <div class="menu-buttons">
+                <button id="startGameBtn" class="btn menu-btn">🎮 Начать игру</button>
+                <button id="upgradesBtn" class="btn menu-btn">⚡ Улучшения</button>
+                <button id="leaderboardBtn" class="btn menu-btn">🏆 Таблица лидеров</button>
+                <button id="dailyQuestsBtn" class="btn menu-btn">📅 Ежедневные задания</button>
+            </div>
+        </div>
+
+        <!-- Игровой экран -->
+        <div id="gameScreen" class="screen hidden">
+            <!-- Верхняя панель с HUD -->
+            <div id="hud">
+                <div class="hud-section">
+                    <div class="hud-item">
+                        <div class="hud-icon">❤️</div>
+                        <div class="progress-container">
+                            <div id="healthBar" class="progress-bar" style="width: 100%"></div>
+                            <div id="healthText" class="progress-text">100/100</div>
+                        </div>
+                    </div>
+                    <div class="hud-item">
+                        <div class="hud-icon">⭐</div>
+                        <div class="progress-container">
+                            <div id="xpBar" class="progress-bar" style="width: 0%"></div>
+                            <div id="levelText" class="progress-text">Ур. 1</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hud-section">
+                    <div class="hud-item">
+                        <div class="hud-icon">💰</div>
+                        <div id="coinsValue" class="hud-value">100</div>
+                    </div>
+                    <div class="hud-item">
+                        <div class="hud-icon">🌊</div>
+                        <div id="waveValue" class="hud-value">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Игровое поле -->
+            <div id="gameField">
+                <!-- Замок с башнями -->
+                <div id="castle">
+                    <div class="castle-tower tower-1"></div>
+                    <div class="castle-tower tower-2"></div>
+                    <div class="castle-tower tower-3"></div>
+                </div>
+                <!-- Враги, снаряды и защитники добавляются динамически -->
+            </div>
+
+            <!-- Нижняя панель с кнопками улучшений -->
+            <div id="upgradePanel">
+                <button class="upgrade-btn" data-upgrade="damage">
+                    <div class="upgrade-icon">⚔️</div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">УРОН</div>
+                        <div class="upgrade-price">10 монет</div>
+                        <div class="upgrade-level">Ур. 1</div>
+                    </div>
+                </button>
+                
+                <button class="upgrade-btn" data-upgrade="range">
+                    <div class="upgrade-icon">🎯</div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">ДАЛЬНОСТЬ</div>
+                        <div class="upgrade-price">15 монет</div>
+                        <div class="upgrade-level">Ур. 1</div>
+                    </div>
+                </button>
+                
+                <button class="upgrade-btn" data-upgrade="reload">
+                    <div class="upgrade-icon">⚡</div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">СКОРОСТЬ</div>
+                        <div class="upgrade-price">12 монет</div>
+                        <div class="upgrade-level">Ур. 1</div>
+                    </div>
+                </button>
+                
+                <button class="upgrade-btn" data-upgrade="health">
+                    <div class="upgrade-icon">❤️</div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">ЗДОРОВЬЕ</div>
+                        <div class="upgrade-price">20 монет</div>
+                        <div class="upgrade-level">Ур. 1</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Экран улучшения уровня -->
+        <div id="levelUpScreen" class="screen hidden">
+            <h2>🎉 УРОВЕНЬ ПОВЫШЕН!</h2>
+            <p>Выберите улучшение:</p>
+            <div id="upgradeCards">
+                <div class="upgradeCard" data-upgrade="wall">
+                    <div class="upgrade-card-icon">🧱</div>
+                    <div class="upgrade-card-title">Укрепить стену</div>
+                    <div class="upgrade-card-desc">Увеличивает максимальное здоровье замка</div>
+                    <div class="upgrade-card-effect">+50% здоровья</div>
+                </div>
+                <div class="upgradeCard" data-upgrade="tower">
+                    <div class="upgrade-card-icon">🏰</div>
+                    <div class="upgrade-card-title">Дополнительная башня</div>
+                    <div class="upgrade-card-desc">Добавляет одну стреляющую башню</div>
+                    <div class="upgrade-card-effect">+1 снаряд за выстрел</div>
+                </div>
+                <div class="upgradeCard" data-upgrade="moat">
+                    <div class="upgrade-card-icon">🏞️</div>
+                    <div class="upgrade-card-title">Выкопать ров</div>
+                    <div class="upgrade-card-desc">Замедляет продвижение врагов</div>
+                    <div class="upgrade-card-effect">Враги -50% скорости</div>
+                </div>
+                <div class="upgradeCard" data-upgrade="defenders">
+                    <div class="upgrade-card-icon">🛡️</div>
+                    <div class="upgrade-card-title">Призвать защитников</div>
+                    <div class="upgrade-card-desc">Воюны защищают подходы к замку</div>
+                    <div class="upgrade-card-effect">2 воина перед замком</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран окончания игры -->
+        <div id="gameOverScreen" class="screen hidden">
+            <h2>💀 ЗАМОК ПАЛ!</h2>
+            <div class="game-over-stats">
+                <p>Достигнутая волна: <span id="finalWave">1</span></p>
+                <p>Заработано монет: <span id="finalCoins">0</span></p>
+                <p>Получено опыта: <span id="finalExp">0</span></p>
+            </div>
+            <div class="game-over-buttons">
+                <button id="restartBtn" class="btn">🔄 Играть снова</button>
+                <button id="menuBtn" class="btn">🏠 В меню</button>
+                <button id="rewardBtn" class="btn">📺 Смотреть рекламу (+100 монет)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем Яндекс SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+    <!-- Подключаем наши скрипты -->
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/entities/Castle.js"></script>
+    <script src="js/entities/Enemy.js"></script>
+    <script src="js/entities/Projectile.js"></script>
+    <script src="js/entities/Defender.js"></script>
+    <script src="js/managers/WaveManager.js"></script>
+    <script src="js/managers/UIManager.js"></script>
+    <script src="js/managers/UpgradeManager.js"></script>
+    <script src="js/managers/YandexSDKManager.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

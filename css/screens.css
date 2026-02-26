@@ -1,0 +1,159 @@
+/* Экран загрузки */
+#loadingScreen {
+    background: #1a1a2e;
+}
+
+.loader {
+    font-size: 24px;
+    color: #4cc9f0;
+}
+
+/* Главное меню */
+#mainMenu {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+
+#mainMenu h1 {
+    font-size: 3em;
+    margin-bottom: 30px;
+    color: #f0f0f0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    background: linear-gradient(45deg, #4cc9f0, #e94560);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#playerName {
+    font-size: 1.5em;
+    margin-bottom: 40px;
+    color: #e94560;
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 2px solid #4cc9f0;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.menu-btn {
+    width: 280px;
+    padding: 15px 30px;
+    font-size: 1.2em;
+}
+
+/* Игровой экран */
+#gameScreen {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    justify-content: flex-start;
+}
+
+/* Экран улучшения уровня */
+#levelUpScreen {
+    background: rgba(15, 52, 96, 0.95);
+}
+
+#levelUpScreen h2 {
+    font-size: 2.5em;
+    color: #4cc9f0;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+#upgradeCards {
+    display: flex;
+    gap: 25px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upgradeCard {
+    width: 200px;
+    height: 240px;
+    background: linear-gradient(135deg, #16213e, #0f3460);
+    border: 3px solid #4cc9f0;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: bold;
+    gap: 10px;
+}
+
+.upgradeCard:hover {
+    transform: scale(1.08);
+    border-color: #e94560;
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+}
+
+.upgradeCard:active {
+    transform: scale(1.02);
+}
+
+.upgrade-card-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.upgrade-card-title {
+    font-size: 1.2em;
+    color: #4cc9f0;
+    margin-bottom: 5px;
+}
+
+.upgrade-card-desc {
+    font-size: 0.9em;
+    color: #bdc3c7;
+    line-height: 1.4;
+}
+
+.upgrade-card-effect {
+    font-size: 0.8em;
+    color: #2ecc71;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+/* Экран окончания игры */
+#gameOverScreen {
+    background: rgba(26, 26, 46, 0.95);
+}
+
+#gameOverScreen h2 {
+    font-size: 3em;
+    color: #e94560;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+#gameOverScreen p {
+    font-size: 1.5em;
+    margin: 15px 0;
+    color: #f0f0f0;
+}
+
+.game-over-stats {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #4cc9f0;
+    margin: 20px 0;
+}
+
+.game-over-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
