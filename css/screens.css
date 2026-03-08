@@ -1,4 +1,4 @@
-/* Экран загрузки */
+/* ========== ЭКРАН ЗАГРУЗКИ ========== */
 #loadingScreen {
     background: #1a1a2e;
 }
@@ -8,7 +8,7 @@
     color: #4cc9f0;
 }
 
-/* Главное меню */
+/* ========== ГЛАВНОЕ МЕНЮ ========== */
 #mainMenu {
     background: linear-gradient(135deg, #1a1a2e, #16213e);
 }
@@ -47,13 +47,13 @@
     font-size: 1.2em;
 }
 
-/* Игровой экран */
+/* ========== ИГРОВОЙ ЭКРАН ========== */
 #gameScreen {
     background: linear-gradient(135deg, #1a1a2e, #16213e);
     justify-content: flex-start;
 }
 
-/* Экран улучшения уровня */
+/* ========== ЭКРАН УЛУЧШЕНИЯ УРОВНЯ ========== */
 #levelUpScreen {
     background: rgba(15, 52, 96, 0.95);
 }
@@ -126,7 +126,7 @@
     font-weight: normal;
 }
 
-/* Экран окончания игры */
+/* ========== ЭКРАН ОКОНЧАНИЯ ИГРЫ ========== */
 #gameOverScreen {
     background: rgba(26, 26, 46, 0.95);
 }

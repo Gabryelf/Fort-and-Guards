@@ -1,4 +1,4 @@
-/* Верхняя панель HUD */
+/* ========== ВЕРХНЯЯ ПАНЕЛЬ HUD ========== */
 #hud {
     width: 100%;
     height: 80px;
@@ -49,7 +49,7 @@
     color: white;
 }
 
-/* Прогресс-бары */
+/* ========== ПРОГРЕСС-БАРЫ ========== */
 .progress-container {
     width: 180px;
     height: 24px;
@@ -87,7 +87,7 @@
     white-space: nowrap;
 }
 
-/* Игровое поле */
+/* ========== ИГРОВОЕ ПОЛЕ ========== */
 #gameField {
     position: relative;
     width: 100%;
@@ -97,7 +97,7 @@
     min-height: 400px;
 }
 
-/* Замок */
+/* ========== ЗАМОК ========== */
 #castle {
     position: absolute;
     left: 5%;
@@ -124,119 +124,136 @@
 .tower-2 { bottom: 10px; right: -12px; }
 .tower-3 { top: 50%; right: -12px; transform: translateY(-50%); }
 
-/* Враги */
+/* ========== ВРАГИ ========== */
 .enemy {
     position: absolute;
-    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    z-index: 15;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+}
+
+.enemy.hit {
+    animation: enemyHit 0.2s ease;
+}
+
+.enemy.dead {
+    animation: enemyDeath 0.4s ease forwards;
+}
+
+/* Индикатор здоровья врагов - ЕДИНСТВЕННЫЙ */
+.enemy-health-container {
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background-color: rgba(255, 0, 0, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+    z-index: 20;
+}
+
+.enemy-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.2s ease;
+}
+
+/* ========== ЗАЩИТНИКИ ========== */
+.defender {
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    z-index: 15;
+    z-index: 18;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     transition: all 0.2s ease;
 }
 
-.enemy.normal {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #e94560, #ff6b8b);
-    border: 3px solid #b02a37;
+.defender.attacking {
+    animation: defenderAttack 0.2s ease;
 }
 
-.enemy.fast {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #f39c12, #f1c40f);
-    border: 3px solid #e67e22;
+.defender.moving {
+    animation: walk 0.3s infinite alternate;
 }
 
-.enemy.tank {
-    width: 65px;
-    height: 65px;
-    background: linear-gradient(135deg, #7f8c8d, #95a5a6);
-    border: 3px solid #34495e;
+.defender.dead {
+    animation: deathAnimation 0.4s ease forwards;
 }
 
-.enemy.hit {
-    animation: hitFlash 0.3s ease;
+/* Индикатор здоровья защитников - ЕДИНСТВЕННЫЙ */
+.defender-health-bar {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 0, 0, 0.5);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 20;
 }
 
-@keyframes hitFlash {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); filter: brightness(1.5); }
+.defender-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.2s ease;
 }
 
-.enemy.dead {
-    animation: deathAnimation 0.5s ease forwards;
+/* ========== БАШНИ ========== */
+.tower {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    z-index: 18;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transition: transform 0.1s ease;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
 }
 
-@keyframes deathAnimation {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.7; }
-    100% { transform: scale(0); opacity: 0; }
+.tower.attacking {
+    animation: towerAttack 0.2s ease;
 }
 
-/* Снаряды */
+/* ========== СНАРЯДЫ ========== */
 .projectile {
     position: absolute;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 12;
-    transition: left 0.05s linear, top 0.05s linear;
-}
-
-.projectile.normal {
-    width: 15px;
-    height: 15px;
-    background: linear-gradient(135deg, #4cc9f0, #7de2fc);
-    border: 2px solid #2a9d8f;
-    box-shadow: 0 0 10px #4cc9f0;
-    font-size: 10px;
+    pointer-events: none;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+    font-size: 16px;
 }
 
 .projectile.critical {
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(135deg, #ff0000, #ff6b6b);
-    border: 2px solid #cc0000;
-    box-shadow: 0 0 15px #ff0000;
-    animation: pulse 0.3s infinite alternate;
-    font-size: 12px;
+    font-size: 20px;
+    filter: drop-shadow(0 0 10px rgba(255,0,0,0.8));
+    animation: projectileGlow 0.3s infinite alternate;
 }
 
-@keyframes pulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.2); }
-}
-
-/* Защитники */
-.defender {
-    position: absolute;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    z-index: 18;
-}
-
-.defender.archer {
-    width: 35px;
-    height: 35px;
-    background: linear-gradient(135deg, #2a9d8f, #27ae60);
-    border: 2px solid #219653;
-}
-
-.defender.knight {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #34495e, #2c3e50);
-    border: 2px solid #1c2833;
-}
-
-/* Нижняя панель улучшений */
+/* ========== НИЖНЯЯ ПАНЕЛЬ УЛУЧШЕНИЙ ========== */
 #upgradePanel {
     width: 100%;
     height: 100px;
@@ -319,13 +336,101 @@
     color: #7de2fc;
 }
 
-/* Визуализация радиуса атаки замка */
+/* ========== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ========== */
 .attack-range-visual {
     position: absolute;
     background: radial-gradient(circle, rgba(76, 201, 240, 0.15) 0%, rgba(76, 201, 240, 0) 70%);
     border: 2px dashed rgba(76, 201, 240, 0.4);
-    border-radius: 0 100px 100px 0;
+    border-left: 3px solid rgba(76, 201, 240, 0.6);
     pointer-events: none;
     z-index: 2;
     box-shadow: 0 0 20px rgba(76, 201, 240, 0.3);
+    transition: all 0.3s ease;
+}
+
+.moat-visual {
+    position: absolute;
+    pointer-events: none;
+    animation: waterFlow 2s linear infinite;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(74, 144, 226, 0.3),
+        rgba(74, 144, 226, 0.3) 10px,
+        rgba(53, 122, 189, 0.3) 10px,
+        rgba(53, 122, 189, 0.3) 20px
+    );
+    z-index: 5;
+}
+
+/* ========== ВСЕ АНИМАЦИИ ========== */
+@keyframes hitFlash {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); filter: brightness(1.5); }
+}
+
+@keyframes deathAnimation {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.7; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes enemyHit {
+    0%, 100% { 
+        filter: brightness(1);
+        transform: scaleX(-1) scale(1);
+    }
+    50% { 
+        filter: brightness(2) drop-shadow(0 0 5px white);
+        transform: scaleX(-1) scale(1.2);
+    }
+}
+
+@keyframes enemyDeath {
+    0% { 
+        opacity: 1;
+        transform: scaleX(-1) scale(1);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: scaleX(-1) scale(1.5);
+    }
+    100% { 
+        opacity: 0;
+        transform: scaleX(-1) scale(0);
+    }
+}
+
+@keyframes defenderAttack {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes towerAttack {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes walk {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3px); }
+}
+
+@keyframes damageFlash {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5) drop-shadow(0 0 10px red); }
+}
+
+@keyframes projectileGlow {
+    from { filter: drop-shadow(0 0 5px rgba(255,0,0,0.5)); }
+    to { filter: drop-shadow(0 0 15px rgba(255,0,0,1)); }
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+}
+
+@keyframes waterFlow {
+    from { background-position: 0 0; }
+    to { background-position: 40px 0; }
 }

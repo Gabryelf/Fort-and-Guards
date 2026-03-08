@@ -1,3 +1,4 @@
+/* ========== ОСНОВНЫЕ СТИЛИ ========== */
 * {
     margin: 0;
     padding: 0;
@@ -42,7 +43,7 @@ body {
     display: none !important;
 }
 
-/* Кнопки */
+/* ========== КНОПКИ ========== */
 .btn {
     padding: 12px 24px;
     margin: 8px;
@@ -71,4 +72,668 @@ body {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+}
+
+/* ========== ЭКРАН ЗАГРУЗКИ ========== */
+#loadingScreen {
+    background: #1a1a2e;
+}
+
+.loader {
+    font-size: 24px;
+    color: #4cc9f0;
+}
+
+/* ========== ГЛАВНОЕ МЕНЮ ========== */
+#mainMenu {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+
+#mainMenu h1 {
+    font-size: 3em;
+    margin-bottom: 30px;
+    color: #f0f0f0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    background: linear-gradient(45deg, #4cc9f0, #e94560);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#playerName {
+    font-size: 1.5em;
+    margin-bottom: 40px;
+    color: #e94560;
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 2px solid #4cc9f0;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.menu-btn {
+    width: 280px;
+    padding: 15px 30px;
+    font-size: 1.2em;
+}
+
+/* ========== ИГРОВОЙ ЭКРАН ========== */
+#gameScreen {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    justify-content: flex-start;
+}
+
+/* ========== ЭКРАН УЛУЧШЕНИЯ УРОВНЯ ========== */
+#levelUpScreen {
+    background: rgba(15, 52, 96, 0.95);
+}
+
+#levelUpScreen h2 {
+    font-size: 2.5em;
+    color: #4cc9f0;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+#upgradeCards {
+    display: flex;
+    gap: 25px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upgradeCard {
+    width: 200px;
+    height: 240px;
+    background: linear-gradient(135deg, #16213e, #0f3460);
+    border: 3px solid #4cc9f0;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: bold;
+    gap: 10px;
+}
+
+.upgradeCard:hover {
+    transform: scale(1.08);
+    border-color: #e94560;
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+}
+
+.upgradeCard:active {
+    transform: scale(1.02);
+}
+
+.upgrade-card-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.upgrade-card-title {
+    font-size: 1.2em;
+    color: #4cc9f0;
+    margin-bottom: 5px;
+}
+
+.upgrade-card-desc {
+    font-size: 0.9em;
+    color: #bdc3c7;
+    line-height: 1.4;
+}
+
+.upgrade-card-effect {
+    font-size: 0.8em;
+    color: #2ecc71;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+/* ========== ЭКРАН ОКОНЧАНИЯ ИГРЫ ========== */
+#gameOverScreen {
+    background: rgba(26, 26, 46, 0.95);
+}
+
+#gameOverScreen h2 {
+    font-size: 3em;
+    color: #e94560;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+#gameOverScreen p {
+    font-size: 1.5em;
+    margin: 15px 0;
+    color: #f0f0f0;
+}
+
+.game-over-stats {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #4cc9f0;
+    margin: 20px 0;
+}
+
+.game-over-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* ========== ВЕРХНЯЯ ПАНЕЛЬ HUD ========== */
+#hud {
+    width: 100%;
+    height: 80px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 52, 96, 0.95);
+    border-bottom: 3px solid #4cc9f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 100;
+}
+
+.hud-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.hud-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: 2px solid #4cc9f0;
+    min-width: 120px;
+}
+
+.hud-icon {
+    width: 28px;
+    height: 28px;
+    background: #4cc9f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+}
+
+.hud-value {
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+}
+
+/* ========== ПРОГРЕСС-БАРЫ ========== */
+.progress-container {
+    width: 180px;
+    height: 24px;
+    background: #2c3e50;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #34495e;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+#healthBar {
+    background: linear-gradient(90deg, #e74c3c, #e94560, #ff7b9c);
+}
+
+#xpBar {
+    background: linear-gradient(90deg, #3498db, #4cc9f0, #7de2fc);
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    white-space: nowrap;
+}
+
+/* ========== ИГРОВОЕ ПОЛЕ ========== */
+#gameField {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    overflow: hidden;
+    min-height: 400px;
+}
+
+/* ========== ЗАМОК ========== */
+#castle {
+    position: absolute;
+    left: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 120px;
+    height: 180px;
+    background: linear-gradient(135deg, #8B4513, #A0522D, #8B4513);
+    border: 4px solid #5D4037;
+    border-radius: 15px 0 0 15px;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    z-index: 20;
+}
+
+.castle-tower {
+    position: absolute;
+    width: 25px;
+    height: 40px;
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    border: 2px solid #5D4037;
+}
+
+.tower-1 { top: 10px; right: -12px; }
+.tower-2 { bottom: 10px; right: -12px; }
+.tower-3 { top: 50%; right: -12px; transform: translateY(-50%); }
+
+/* ========== ВРАГИ ========== */
+.enemy {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    z-index: 15;
+    transition: all 0.2s ease;
+    /* Убираем !important чтобы не переопределять встроенные стили */
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    /* Добавляем базовые размеры */
+    min-width: 40px;
+    min-height: 40px;
+    /* Текст должен быть видимым */
+    color: white;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Размеры для разных типов врагов */
+.enemy.normal {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+}
+
+.enemy.fast {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+}
+
+.enemy.tank {
+    width: 65px;
+    height: 65px;
+    font-size: 32px;
+}
+
+.enemy.hit {
+    animation: enemyHit 0.2s ease;
+}
+
+.enemy.dead {
+    animation: enemyDeath 0.4s ease forwards;
+}
+
+/* Индикатор здоровья врагов */
+.enemy-health-container {
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background-color: rgba(255, 0, 0, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+    z-index: 20;
+    pointer-events: none; /* Чтобы не мешать кликам */
+}
+
+.enemy-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.2s ease;
+}
+
+/* Поддержка спрайтов */
+.enemy[style*="background-image"] {
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    color: transparent !important; /* Прячем эмодзи когда есть спрайт */
+    text-shadow: none !important;
+}
+
+/* ========== ЗАЩИТНИКИ ========== */
+.defender {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    z-index: 18;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    min-width: 35px;
+    min-height: 35px;
+    color: white;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.defender.archer {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+    color: #4cc9f0;
+}
+
+.defender.knight {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+    color: #e94560;
+}
+
+.defender.attacking {
+    animation: defenderAttack 0.2s ease;
+}
+
+.defender.moving {
+    animation: walk 0.3s infinite alternate;
+}
+
+.defender.dead {
+    animation: deathAnimation 0.4s ease forwards;
+}
+
+/* Индикатор здоровья защитников */
+.defender-health-bar {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 0, 0, 0.5);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.defender-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.2s ease;
+}
+
+/* Поддержка спрайтов для защитников */
+.defender[style*="background-image"] {
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    color: transparent !important;
+    text-shadow: none !important;
+}
+
+/* ========== БАШНИ ========== */
+.tower {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    z-index: 18;
+    width: 40px;
+    height: 60px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    transition: transform 0.1s ease;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+    color: #4cc9f0;
+}
+
+.tower.attacking {
+    animation: towerAttack 0.2s ease;
+}
+
+/* ========== СНАРЯДЫ ========== */
+.projectile {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 12;
+    pointer-events: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.projectile.critical {
+    font-size: 20px;
+    color: #ff0000;
+    filter: drop-shadow(0 0 10px rgba(255,0,0,0.8));
+    animation: projectileGlow 0.3s infinite alternate;
+}
+
+/* ========== НИЖНЯЯ ПАНЕЛЬ УЛУЧШЕНИЙ ========== */
+#upgradePanel {
+    width: 100%;
+    height: 100px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(15, 52, 96, 0.95);
+    border-top: 3px solid #4cc9f0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 100;
+}
+
+.upgrade-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #16213e, #0f3460);
+    border: 2px solid #4cc9f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 130px;
+    color: white;
+    text-decoration: none;
+}
+
+.upgrade-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0f3460, #16213e);
+    transform: translateY(-3px);
+    border-color: #e94560;
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+}
+
+.upgrade-btn:active {
+    transform: translateY(-1px);
+}
+
+.upgrade-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    border-color: #7f8c8d;
+}
+
+.upgrade-icon {
+    width: 35px;
+    height: 35px;
+    background: #4cc9f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.upgrade-info {
+    text-align: center;
+}
+
+.upgrade-name {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: white;
+}
+
+.upgrade-price {
+    font-size: 12px;
+    color: #f1c40f;
+    font-weight: bold;
+}
+
+.upgrade-level {
+    font-size: 11px;
+    color: #7de2fc;
+}
+
+/* ========== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ========== */
+.attack-range-visual {
+    position: absolute;
+    background: radial-gradient(circle, rgba(76, 201, 240, 0.15) 0%, rgba(76, 201, 240, 0) 70%);
+    border: 2px dashed rgba(76, 201, 240, 0.4);
+    border-left: 3px solid rgba(76, 201, 240, 0.6);
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 0 20px rgba(76, 201, 240, 0.3);
+    transition: all 0.3s ease;
+}
+
+.moat-visual {
+    position: absolute;
+    pointer-events: none;
+    animation: waterFlow 2s linear infinite;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(74, 144, 226, 0.3),
+        rgba(74, 144, 226, 0.3) 10px,
+        rgba(53, 122, 189, 0.3) 10px,
+        rgba(53, 122, 189, 0.3) 20px
+    );
+    z-index: 5;
+}
+
+/* ========== ВСЕ АНИМАЦИИ ========== */
+@keyframes hitFlash {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); filter: brightness(1.5); }
+}
+
+@keyframes deathAnimation {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.7; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes enemyHit {
+    0%, 100% { 
+        filter: brightness(1);
+        transform: scale(1);
+    }
+    50% { 
+        filter: brightness(2) drop-shadow(0 0 5px white);
+        transform: scale(1.2);
+    }
+}
+
+@keyframes enemyDeath {
+    0% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: scale(1.5);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0);
+    }
+}
+
+@keyframes defenderAttack {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes towerAttack {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes walk {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3px); }
+}
+
+@keyframes damageFlash {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5) drop-shadow(0 0 10px red); }
+}
+
+@keyframes projectileGlow {
+    from { filter: drop-shadow(0 0 5px rgba(255,0,0,0.5)); }
+    to { filter: drop-shadow(0 0 15px rgba(255,0,0,1)); }
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+}
+
+@keyframes waterFlow {
+    from { background-position: 0 0; }
+    to { background-position: 40px 0; }
 }
