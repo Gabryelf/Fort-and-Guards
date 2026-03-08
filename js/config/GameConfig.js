@@ -7,7 +7,8 @@ const GameConfig = {
         baseAttackSpeed: 1,
         criticalChance: 0.1,
         criticalMultiplier: 2,
-        maxTowers: 4
+        maxTowers: 4,
+        sprite: "https://github.com/Gabryelf/Atlas-Assets/raw/main/docs/images/fantasy/castle/castle_1.png" 
     },
 
     // Настройки врагов
@@ -72,6 +73,12 @@ const GameConfig = {
             preferredDistance: 40,
             retreatDistance: 20
         }
+    },
+
+     towers: {
+        sprite: "https://github.com/Gabryelf/Atlas-Assets/raw/main/docs/images/fantasy/castle/tower_1.png",
+        width: 40,
+        height: 60
     },
 
     // Снаряды (используем эмодзи, так как стрелы не грузятся)

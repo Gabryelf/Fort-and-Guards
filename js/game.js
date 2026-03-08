@@ -221,37 +221,61 @@ class Game {
         });
     }
 
-    spawnDefenders(count) {
-        console.log(`Spawning ${count} defenders`);
+    addDefenders(count) {
+        console.log(`Adding ${count} defenders`);
         
-        // Получаем размеры игрового поля
         const gameField = document.getElementById('gameField');
         const fieldRect = gameField.getBoundingClientRect();
         
-        // Очищаем старых защитников
-        this.defenders.forEach(d => d.element?.remove());
-        this.defenders = [];
-        
-        // Позиции для защитников (перед замком)
+        // Создаем сетку позиций для защитников
+        const rows = 3; // Три ряда
+        const cols = 4; // Четыре колонки
         const startX = 250;
-        const centerY = fieldRect.height / 2;
+        const startY = fieldRect.height * 0.2;
+        const spacingX = 70;
+        const spacingY = 60;
         
-        for (let i = 0; i < count; i++) {
-            // Чередуем типы защитников
-            const type = i % 2 === 0 ? 'archer' : 'knight';
-            
-            // Рассчитываем позицию с вертикальным смещением
-            const x = startX + i * 70;
-            const y = centerY - 30 + (i * 30);
-            
-            // Проверяем, что y не выходит за границы
-            const clampedY = Math.max(50, Math.min(fieldRect.height - 100, y));
-            
-            console.log(`Creating defender ${type} at (${x}, ${clampedY})`);
-            
-            // Создаем защитника
-            const defender = new Defender(this, x, clampedY, type);
-            this.defenders.push(defender);
+        // Создаем массив всех возможных позиций
+        const positions = [];
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                positions.push({
+                    x: startX + col * spacingX,
+                    y: startY + row * spacingY,
+                    taken: false
+                });
+            }
+        }
+        
+        // Отмечаем занятые позиции
+        this.defenders.forEach(defender => {
+            if (!defender.isDead) {
+                // Находим ближайшую позицию в сетке
+                for (let pos of positions) {
+                    const distance = Math.sqrt(
+                        Math.pow(defender.x - pos.x, 2) + 
+                        Math.pow(defender.y - pos.y, 2)
+                    );
+                    if (distance < 30) {
+                        pos.taken = true;
+                        break;
+                    }
+                }
+            }
+        });
+        
+        // Добавляем новых защитников на свободные позиции
+        let added = 0;
+        for (let pos of positions) {
+            if (!pos.taken && added < count) {
+                const type = (added % 2 === 0) ? 'archer' : 'knight';
+                
+                console.log(`Creating defender ${type} at (${pos.x}, ${pos.y})`);
+                
+                const defender = new Defender(this, pos.x, pos.y, type);
+                this.defenders.push(defender);
+                added++;
+            }
         }
         
         console.log(`Total defenders: ${this.defenders.length}`);
@@ -295,6 +319,14 @@ class Game {
         }
     }
 }
+
+document.getElementById('leaderboardBtn').addEventListener('click', () => {
+    if (this.yandexSDKManager) {
+        this.yandexSDKManager.showLeaderboard();
+    } else {
+        alert('Таблица лидеров доступна только в Яндекс Играх');
+    }
+});
 
 // Запуск игры
 window.game = new Game();

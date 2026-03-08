@@ -24,11 +24,9 @@ class UpgradeManager {
     setupEventListeners() {
         // Удаляем старые обработчики и добавляем новые
         document.querySelectorAll('.upgrade-btn').forEach(btn => {
-            // Удаляем все старые обработчики
             btn.replaceWith(btn.cloneNode(true));
         });
         
-        // Добавляем новые обработчики
         document.querySelectorAll('.upgrade-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -64,12 +62,9 @@ class UpgradeManager {
             
             console.log(`Upgrade ${type} purchased. New level: ${this.upgrades[type].level}`);
             
-            // Визуальный эффект
             this.showPurchaseEffect(type);
         } else {
             console.log(`Not enough coins. Need ${price}, have ${this.game.coins}`);
-            
-            // Визуальный эффект ошибки
             this.showErrorEffect(type);
         }
     }
@@ -111,24 +106,62 @@ class UpgradeManager {
                 break;
                 
             case 'tower':
-                this.tacticalUpgrades.tower = true;
-                reward.apply(this.game.castle);
+                if (!this.tacticalUpgrades.tower) {
+                    this.tacticalUpgrades.tower = true;
+                    // Добавляем башню
+                    const success = this.game.castle.addTower();
+                    if (!success) {
+                        console.log('Cannot add more towers');
+                    }
+                } else {
+                    // Пытаемся добавить еще одну башню
+                    this.game.castle.addTower();
+                }
                 break;
                 
             case 'moat':
-                this.tacticalUpgrades.moat = true;
-                reward.apply(this.game);
+                if (!this.tacticalUpgrades.moat) {
+                    this.tacticalUpgrades.moat = true;
+                    this.game.isMoatActive = true;
+                    this.createMoatVisual();
+                }
                 break;
                 
             case 'defenders':
                 this.tacticalUpgrades.defenders = true;
-                reward.apply(this.game);
+                this.game.addDefenders(2);
                 break;
         }
         
-        // Скрываем экран улучшений и продолжаем игру
         this.game.uiManager.showScreen('gameScreen');
         this.game.gameState = 'playing';
+    }
+    
+    createMoatVisual() {
+        const moatElement = document.createElement('div');
+        moatElement.className = 'moat-visual';
+        moatElement.style.position = 'absolute';
+        moatElement.style.left = '250px';
+        moatElement.style.top = '0';
+        moatElement.style.width = '20px';
+        moatElement.style.height = '100%';
+        moatElement.style.background = 'linear-gradient(90deg, #4a90e2, #357abd)';
+        moatElement.style.opacity = '0.3';
+        moatElement.style.borderLeft = '3px solid #4cc9f0';
+        moatElement.style.borderRight = '3px solid #4cc9f0';
+        moatElement.style.zIndex = '5';
+        moatElement.style.pointerEvents = 'none';
+        
+        const waterSprite = document.createElement('div');
+        waterSprite.style.position = 'absolute';
+        waterSprite.style.left = '-20px';
+        waterSprite.style.top = '50%';
+        waterSprite.style.transform = 'translateY(-50%)';
+        waterSprite.style.fontSize = '40px';
+        waterSprite.innerHTML = '💧🌊💧';
+        moatElement.appendChild(waterSprite);
+        
+        this.game.uiManager.gameField.appendChild(moatElement);
     }
 
     showPurchaseEffect(type) {

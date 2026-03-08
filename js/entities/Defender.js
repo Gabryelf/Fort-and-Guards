@@ -15,20 +15,22 @@ class Defender {
         this.attackSpeed = this.config.attackSpeed;
         this.attackCooldown = 0;
         this.speed = this.config.speed || 50;
-        this.preferredDistance = this.config.preferredDistance || 100;
-        this.retreatDistance = this.config.retreatDistance || 30;
         
         this.spriteUrl = this.config.sprite;
         
         this.isDead = false;
-        this.isMoving = false;
+        this.isAttacking = false;
         this.currentTarget = null;
-        this.originalX = x; // Запоминаем исходную позицию
-        this.maxRightOffset = 150; // Максимальное смещение вправо от исходной позиции
         
-        // Размеры
+        // Позиционирование
+        this.formationX = x;
+        this.formationY = y;
+        this.patrolRange = 30;
+        
+        // Размеры и коллизия
         this.width = this.config.width || 40;
         this.height = this.config.height || 40;
+        this.collisionRadius = 25; // Радиус для проверки коллизий
         this.emoji = this.config.emoji || '🛡️';
         
         this.createElement();
@@ -41,40 +43,68 @@ class Defender {
         this.element.style.zIndex = '15';
         this.element.style.width = `${this.width}px`;
         this.element.style.height = `${this.height}px`;
+        this.element.style.display = 'flex';
+        this.element.style.alignItems = 'center';
+        this.element.style.justifyContent = 'center';
+        this.element.style.fontSize = '20px';
         
-        // Загружаем спрайт
-        spriteLoader.loadSprite(this.spriteUrl, this.element, this.emoji, false);
+        // Показываем эмодзи
+        this.element.innerHTML = this.type === 'archer' ? '🏹' : '⚔️';
         
-        // Добавляем индикатор здоровья
+        // Загружаем спрайт если есть
+        if (window.spriteLoader && this.spriteUrl) {
+            window.spriteLoader.loadSprite(this.spriteUrl, this.element, this.emoji, false);
+        }
+        
+        // Индикатор здоровья - создаем сразу и добавляем в DOM
         this.healthBar = document.createElement('div');
         this.healthBar.className = 'defender-health-bar';
-        this.element.appendChild(this.healthBar);
+        this.healthBar.style.position = 'absolute';
+        this.healthBar.style.bottom = '-8px';
+        this.healthBar.style.left = '0';
+        this.healthBar.style.width = '100%';
+        this.healthBar.style.height = '4px';
+        this.healthBar.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+        this.healthBar.style.borderRadius = '2px';
+        this.healthBar.style.overflow = 'hidden';
+        this.healthBar.style.zIndex = '20';
         
         this.healthFill = document.createElement('div');
         this.healthFill.className = 'defender-health-fill';
-        this.healthBar.appendChild(this.healthFill);
+        this.healthFill.style.height = '100%';
+        this.healthFill.style.width = '100%';
+        this.healthFill.style.backgroundColor = '#4CAF50';
+        this.healthFill.style.transition = 'width 0.2s ease';
         
-        this.game.uiManager.gameField.appendChild(this.element);
-        this.updateElementPosition();
-        this.updateHealthBar();
+        this.healthBar.appendChild(this.healthFill);
+        this.element.appendChild(this.healthBar);
+        
+        if (this.game?.uiManager?.gameField) {
+            this.game.uiManager.gameField.appendChild(this.element);
+            this.updateElementPosition();
+            this.updateHealthBar(); // Сразу обновляем полоску
+        }
     }
 
     update(deltaTime) {
         if (this.isDead) return;
         
+        // Проверяем коллизии с другими защитниками
+        this.checkCollisions();
+        
         // Поиск ближайшего врага
         this.currentTarget = this.findNearestEnemy();
         
         if (this.currentTarget) {
-            // Поведение в зависимости от типа защитника
+            // Поведение в зависимости от типа
             if (this.type === 'archer') {
                 this.archerBehavior(deltaTime);
             } else {
                 this.knightBehavior(deltaTime);
             }
         } else {
-            // Если нет врагов, возвращаемся на исходную позицию
-            this.returnToBase(deltaTime);
+            // Если нет врагов, возвращаемся в строй
+            this.returnToFormation(deltaTime);
         }
         
         // Атака, если есть цель и она в радиусе
@@ -89,27 +119,56 @@ class Defender {
         this.updateElementPosition();
     }
 
+    checkCollisions() {
+        // Проверяем столкновения с другими защитниками
+        this.game.defenders.forEach(other => {
+            if (other === this || other.isDead) return;
+            
+            const dx = this.x - other.x;
+            const dy = this.y - other.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < this.collisionRadius + other.collisionRadius) {
+                // Раздвигаем защитников
+                const angle = Math.atan2(dy, dx);
+                const pushX = Math.cos(angle) * 2;
+                const pushY = Math.sin(angle) * 2;
+                
+                this.x += pushX;
+                this.y += pushY;
+                other.x -= pushX;
+                other.y -= pushY;
+                
+                // Ограничиваем движение
+                this.clampPosition();
+                other.clampPosition();
+            }
+        });
+    }
+
+    clampPosition() {
+        // Ограничиваем позицию в пределах поля
+        const gameField = this.game?.uiManager?.gameField;
+        if (gameField) {
+            const fieldRect = gameField.getBoundingClientRect();
+            this.x = Math.max(30, Math.min(fieldRect.width - this.width - 30, this.x));
+            this.y = Math.max(30, Math.min(fieldRect.height - this.height - 30, this.y));
+        }
+    }
+
     archerBehavior(deltaTime) {
         if (!this.currentTarget) return;
         
         const distance = this.getDistanceToEnemy(this.currentTarget);
-        const targetRect = this.currentTarget.getBoundingRect();
         
-        // Лучник держит дистанцию
-        if (distance < this.preferredDistance - this.retreatDistance) {
+        if (distance < this.attackRange * 0.4) {
             // Враг слишком близко - отступаем
-            const direction = -1; // Двигаемся влево (от врага)
-            this.move(direction, deltaTime);
-            this.isMoving = true;
-        } else if (distance > this.preferredDistance + this.retreatDistance) {
-            // Враг слишком далеко - приближаемся, но не дальше исходной позиции
-            if (this.x < this.originalX + this.maxRightOffset) {
-                const direction = 1; // Двигаемся вправо (к врагу)
-                this.move(direction, deltaTime);
-                this.isMoving = true;
-            }
-        } else {
-            this.isMoving = false;
+            const direction = -1;
+            this.move(direction * this.speed * deltaTime, 0);
+        } else if (distance > this.attackRange * 0.8) {
+            // Враг далеко - немного приближаемся
+            const direction = 1;
+            this.move(direction * this.speed * deltaTime * 0.5, 0);
         }
     }
 
@@ -118,30 +177,55 @@ class Defender {
         
         const distance = this.getDistanceToEnemy(this.currentTarget);
         
-        // Рыцарь идет на врага, но не дальше исходной позиции
-        if (distance > this.attackRange * 0.8 && this.x < this.originalX + this.maxRightOffset) {
-            const direction = 1; // Двигаемся к врагу
-            this.move(direction, deltaTime);
-            this.isMoving = true;
-        } else {
-            this.isMoving = false;
+        if (distance > this.attackRange * 0.6) {
+            const enemy = this.currentTarget;
+            const enemyRect = enemy.getBoundingRect();
+            const enemyX = enemyRect.x + enemyRect.width / 2;
+            const enemyY = enemyRect.y + enemyRect.height / 2;
+            
+            const dx = enemyX - (this.x + this.width / 2);
+            const dy = enemyY - (this.y + this.height / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist > 0) {
+                const moveX = (dx / dist) * this.speed * deltaTime;
+                const moveY = (dy / dist) * this.speed * deltaTime;
+                
+                const newX = this.x + moveX;
+                if (newX <= this.formationX + 150) {
+                    this.x = newX;
+                    this.y += moveY;
+                }
+            }
         }
     }
 
-    move(direction, deltaTime) {
-        // direction: 1 - вправо (к врагу), -1 - влево (к замку)
-        const newX = this.x + direction * this.speed * deltaTime;
+    move(deltaX, deltaY) {
+        const newX = this.x + deltaX;
+        const newY = this.y + deltaY;
         
-        // Ограничиваем движение (не даем уйти далеко вправо и не даем зайти в замок)
-        if (newX >= this.originalX - 50 && newX <= this.originalX + this.maxRightOffset) {
+        if (Math.abs(newX - this.formationX) <= 150) {
             this.x = newX;
         }
+        
+        const gameField = this.game?.uiManager?.gameField;
+        if (gameField) {
+            const fieldRect = gameField.getBoundingClientRect();
+            this.y = Math.max(30, Math.min(fieldRect.height - this.height - 30, newY));
+        }
     }
 
-    returnToBase(deltaTime) {
-        if (Math.abs(this.x - this.originalX) > 5) {
-            const direction = this.x < this.originalX ? 1 : -1;
-            this.x += direction * this.speed * deltaTime * 0.5; // Медленнее возвращаемся
+    returnToFormation(deltaTime) {
+        const dx = this.formationX - this.x;
+        const dy = this.formationY - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance > 5) {
+            const moveX = (dx / distance) * this.speed * deltaTime * 0.5;
+            const moveY = (dy / distance) * this.speed * deltaTime * 0.5;
+            
+            this.x += moveX;
+            this.y += moveY;
         }
     }
 
@@ -184,18 +268,20 @@ class Defender {
         if (!enemy || enemy.isDead) return;
         
         enemy.takeDamage(this.damage);
+        this.isAttacking = true;
         
-        // Визуальный эффект атаки
-        this.element.classList.add('attacking');
-        setTimeout(() => {
-            if (this.element) {
-                this.element.classList.remove('attacking');
-            }
-        }, 200);
+        if (this.element) {
+            this.element.classList.add('attacking');
+            setTimeout(() => {
+                if (this.element) {
+                    this.element.classList.remove('attacking');
+                    this.isAttacking = false;
+                }
+            }, 200);
+        }
         
-        if (enemy.isDead) {
-            this.game.addCoins(enemy.reward);
-            this.game.addExperience(enemy.experience);
+        if (this.type === 'knight') {
+            this.takeDamage(enemy.damage * 0.3);
         }
     }
 
@@ -204,18 +290,26 @@ class Defender {
         this.updateHealthBar();
         
         if (this.health <= 0) {
-            this.health = 0;
-            this.isDead = true;
-            if (this.element) {
-                this.element.remove();
-            }
+            this.die();
+        }
+    }
+
+    die() {
+        this.isDead = true;
+        if (this.element) {
+            this.element.classList.add('dead');
+            setTimeout(() => {
+                if (this.element && this.element.parentNode) {
+                    this.element.remove();
+                }
+            }, 400);
         }
     }
 
     updateHealthBar() {
         if (this.healthFill) {
-            const percent = this.health / this.maxHealth;
-            this.healthFill.style.width = `${Math.max(0, percent * 100)}%`;
+            const percent = Math.max(0, (this.health / this.maxHealth) * 100);
+            this.healthFill.style.width = `${percent}%`;
         }
     }
 
