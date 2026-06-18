@@ -1,0 +1,479 @@
+/* ========== КНОПКА УСКОРЕНИЯ ========== */
+#speedControl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
+    padding: 5px 12px 5px 8px;
+    border-radius: 25px;
+    border: 2px solid #4cc9f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 70px;
+    justify-content: center;
+    height: 40px;
+}
+
+#speedControl:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: #e94560;
+}
+
+#speedControl .speed-icon {
+    font-size: 16px;
+    margin-right: 4px;
+}
+
+#speedControl .speed-value {
+    font-weight: bold;
+    font-size: 16px;
+    color: #4cc9f0;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* ========== ФОН ИГРОВОГО ПОЛЯ ========== */
+#gameField {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    min-height: 400px;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+#gameField .background-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Декорации на фоне */
+.field-decoration {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.7;
+    font-size: 40px;
+}
+
+/* Обновленный ров */
+.moat-visual {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.moat-visual .moat-sprite {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.8;
+}
+
+.moat-visual .moat-water {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: waterFlow 2s linear infinite;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(74, 144, 226, 0.3),
+        rgba(74, 144, 226, 0.3) 10px,
+        rgba(53, 122, 189, 0.3) 10px,
+        rgba(53, 122, 189, 0.3) 20px
+    );
+}
+
+/* ========== ОБНОВЛЕННОЕ МЕНЮ ========== */
+#mainMenu {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    padding: 20px;
+    position: relative;
+}
+
+#mainMenu .menu-header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 80px;
+    z-index: 10;
+}
+
+#mainMenu .menu-header img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#mainMenu .player-info {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 14px;
+    color: #4cc9f0;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 12px;
+    border-radius: 15px;
+    border: 1px solid #4cc9f0;
+    z-index: 10;
+}
+
+#mainMenu .player-info .resources {
+    display: flex;
+    gap: 10px;
+    margin-top: 3px;
+    font-size: 12px;
+}
+
+#mainMenu .player-info .resources span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Контейнер для уровней */
+#levelCarousel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.level-display {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 16/9;
+    background: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 3px solid #4cc9f0;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.level-display.locked {
+    opacity: 0.5;
+    border-color: #666;
+    filter: grayscale(0.7);
+}
+
+.level-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.level-display .level-number {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.8);
+    color: #4cc9f0;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid #4cc9f0;
+}
+
+.level-display .level-status {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.8);
+    color: #f1c40f;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    border: 2px solid #f1c40f;
+}
+
+.level-display .level-lock {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    opacity: 0.8;
+}
+
+/* Кнопки навигации по уровням */
+.level-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 10px 0 20px 0;
+}
+
+.level-nav button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #16213e, #0f3460);
+    border: 2px solid #4cc9f0;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.level-nav button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0f3460, #16213e);
+    transform: scale(1.1);
+    border-color: #e94560;
+}
+
+.level-nav button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.level-nav .level-indicator {
+    font-size: 18px;
+    color: #4cc9f0;
+    min-width: 100px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Кнопки меню внизу */
+.menu-bottom {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 10;
+}
+
+.menu-bottom .menu-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #16213e, #0f3460);
+    border: 2px solid #4cc9f0;
+    transition: all 0.3s ease;
+}
+
+.menu-bottom .menu-btn:hover {
+    transform: scale(1.1);
+    border-color: #e94560;
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+}
+
+.menu-bottom .menu-btn.active {
+    border-color: #e94560;
+    background: linear-gradient(135deg, #0f3460, #16213e);
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+}
+
+/* Кнопка старта уровня */
+#startLevelBtn {
+    padding: 12px 40px;
+    font-size: 20px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border: 2px solid #2ecc71;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    margin-top: 10px;
+}
+
+#startLevelBtn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+}
+
+#startLevelBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========== ЭКРАН ПОБЕДЫ ========== */
+#victoryScreen {
+    background: rgba(26, 26, 46, 0.95);
+}
+
+#victoryScreen h2 {
+    font-size: 3em;
+    color: #2ecc71;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+}
+
+#victoryScreen .victory-stats {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #2ecc71;
+    margin: 20px 0;
+    text-align: center;
+}
+
+#victoryScreen .victory-stats p {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+#victoryScreen .reward-display {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#victoryScreen .reward-item {
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid #f1c40f;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2em;
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+@media (max-width: 768px) {
+    #hud {
+        height: 60px;
+        padding: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .hud-section {
+        gap: 10px;
+    }
+    
+    .hud-item {
+        padding: 5px 10px;
+        min-width: 80px;
+        font-size: 12px;
+    }
+    
+    .progress-container {
+        width: 100px;
+        height: 18px;
+    }
+    
+    #upgradePanel {
+        height: 80px;
+        padding: 8px;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .upgrade-btn {
+        padding: 8px 10px;
+        min-width: 80px;
+        gap: 4px;
+    }
+    
+    .upgrade-icon {
+        width: 25px;
+        height: 25px;
+        font-size: 14px;
+    }
+    
+    .upgrade-name {
+        font-size: 10px;
+    }
+    
+    .upgrade-price {
+        font-size: 9px;
+    }
+    
+    #speedControl {
+        padding: 3px 8px;
+        min-width: 50px;
+        height: 30px;
+    }
+    
+    #speedControl .speed-value {
+        font-size: 12px;
+        min-width: 20px;
+    }
+    
+    .menu-bottom .menu-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    #mainMenu .player-info {
+        font-size: 11px;
+        padding: 3px 8px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .level-display {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hud-item {
+        padding: 3px 8px;
+        min-width: 60px;
+        font-size: 10px;
+        gap: 5px;
+    }
+    
+    .progress-container {
+        width: 70px;
+        height: 14px;
+    }
+    
+    .hud-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+    
+    .upgrade-btn {
+        min-width: 60px;
+        padding: 5px 8px;
+    }
+    
+    .level-display {
+        max-width: 250px;
+    }
+    
+    #startLevelBtn {
+        padding: 8px 20px;
+        font-size: 16px;
+    }
+}

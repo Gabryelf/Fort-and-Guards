@@ -4,10 +4,7 @@ class Defender {
         this.x = x;
         this.y = y;
         this.type = type;
-        
-        // Используем конфиг
         this.config = GameConfig.defenders[type] || GameConfig.defenders.archer;
-        
         this.health = this.config.health;
         this.maxHealth = this.config.health;
         this.damage = this.config.damage;
@@ -15,22 +12,16 @@ class Defender {
         this.attackSpeed = this.config.attackSpeed;
         this.attackCooldown = 0;
         this.speed = this.config.speed || 50;
-        
         this.spriteUrl = this.config.sprite;
-        
         this.isDead = false;
         this.isAttacking = false;
         this.currentTarget = null;
-        
-        // Позиционирование
         this.formationX = x;
         this.formationY = y;
         this.patrolRange = 30;
-        
-        // Размеры и коллизия
         this.width = this.config.width || 40;
         this.height = this.config.height || 40;
-        this.collisionRadius = 25; // Радиус для проверки коллизий
+        this.collisionRadius = 25;
         this.emoji = this.config.emoji || '🛡️';
         
         this.createElement();
@@ -46,28 +37,44 @@ class Defender {
         this.element.style.display = 'flex';
         this.element.style.alignItems = 'center';
         this.element.style.justifyContent = 'center';
-        this.element.style.fontSize = '20px';
+        this.element.style.fontSize = '24px';
+        this.element.style.background = 'none';
+        this.element.style.border = 'none';
+        this.element.style.pointerEvents = 'none';
+        
+        // Создаем контейнер для спрайта и здоровья
+        this.spriteContainer = document.createElement('div');
+        this.spriteContainer.style.width = '100%';
+        this.spriteContainer.style.height = '100%';
+        this.spriteContainer.style.display = 'flex';
+        this.spriteContainer.style.alignItems = 'center';
+        this.spriteContainer.style.justifyContent = 'center';
+        this.spriteContainer.style.position = 'relative';
         
         // Показываем эмодзи
-        this.element.innerHTML = this.type === 'archer' ? '🏹' : '⚔️';
+        this.spriteContainer.innerHTML = this.type === 'archer' ? '🏹' : '⚔️';
         
         // Загружаем спрайт если есть
         if (window.spriteLoader && this.spriteUrl) {
-            window.spriteLoader.loadSprite(this.spriteUrl, this.element, this.emoji, false);
+            window.spriteLoader.loadSprite(this.spriteUrl, this.spriteContainer, this.emoji, false);
         }
         
-        // Индикатор здоровья - создаем сразу и добавляем в DOM
+        this.element.appendChild(this.spriteContainer);
+        
+        // Индикатор здоровья - создаем с правильным позиционированием
         this.healthBar = document.createElement('div');
         this.healthBar.className = 'defender-health-bar';
         this.healthBar.style.position = 'absolute';
-        this.healthBar.style.bottom = '-8px';
-        this.healthBar.style.left = '0';
-        this.healthBar.style.width = '100%';
-        this.healthBar.style.height = '4px';
-        this.healthBar.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
-        this.healthBar.style.borderRadius = '2px';
+        this.healthBar.style.bottom = '-10px';
+        this.healthBar.style.left = '50%';
+        this.healthBar.style.transform = 'translateX(-50%)';
+        this.healthBar.style.width = '80%';
+        this.healthBar.style.height = '5px';
+        this.healthBar.style.backgroundColor = 'rgba(255, 0, 0, 0.6)';
+        this.healthBar.style.borderRadius = '3px';
         this.healthBar.style.overflow = 'hidden';
         this.healthBar.style.zIndex = '20';
+        this.healthBar.style.border = '1px solid rgba(0,0,0,0.3)';
         
         this.healthFill = document.createElement('div');
         this.healthFill.className = 'defender-health-fill';
@@ -82,7 +89,23 @@ class Defender {
         if (this.game?.uiManager?.gameField) {
             this.game.uiManager.gameField.appendChild(this.element);
             this.updateElementPosition();
-            this.updateHealthBar(); // Сразу обновляем полоску
+            // Принудительно обновляем полоску
+            setTimeout(() => this.updateHealthBar(), 50);
+        }
+    }
+
+    updateHealthBar() {
+        if (this.healthFill) {
+            const percent = Math.max(0, (this.health / this.maxHealth) * 100);
+            this.healthFill.style.width = `${percent}%`;
+            // Меняем цвет в зависимости от здоровья
+            if (percent < 25) {
+                this.healthFill.style.backgroundColor = '#ff4444';
+            } else if (percent < 50) {
+                this.healthFill.style.backgroundColor = '#ffaa00';
+            } else {
+                this.healthFill.style.backgroundColor = '#4CAF50';
+            }
         }
     }
 
@@ -303,13 +326,6 @@ class Defender {
                     this.element.remove();
                 }
             }, 400);
-        }
-    }
-
-    updateHealthBar() {
-        if (this.healthFill) {
-            const percent = Math.max(0, (this.health / this.maxHealth) * 100);
-            this.healthFill.style.width = `${percent}%`;
         }
     }
 

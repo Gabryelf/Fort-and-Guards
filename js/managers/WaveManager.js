@@ -67,4 +67,24 @@ class WaveManager {
         this.enemiesToSpawn = 3;
         this.waveInProgress = false;
     }
+
+    handleWaveComplete() {
+        // Вызываем метод игры для обработки завершения волны
+        if (this.game && typeof this.game.handleWaveComplete === 'function') {
+            this.game.handleWaveComplete();
+        }
+    }
+
+    completeWave() {
+        console.log(`🎉 Wave ${this.currentWave} completed!`);
+        this.currentWave++;
+        this.waveInProgress = false;
+        
+        // Награда за волну
+        this.game.addCoins(this.currentWave * 10);
+        this.game.addExperience(this.currentWave * 15);
+        
+        // Вызываем обработчик завершения волны
+        this.handleWaveComplete();
+    }
 }
