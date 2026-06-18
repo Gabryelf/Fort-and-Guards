@@ -6,8 +6,7 @@
     <title>Idle Tower Defense</title>
     
     <link rel="stylesheet" href="css/style.css">
-
- 
+    <link rel="stylesheet" href="css/enhancements.css">
 </head>
 <body>
     <div id="gameContainer">
@@ -18,13 +17,44 @@
 
         <!-- Главное меню -->
         <div id="mainMenu" class="screen hidden">
-            <h1>ЗАМОК ЗАЩИТНИК</h1>
-            <div id="playerName">🏰 Игрок</div>
-            <div class="menu-buttons">
-                <button id="startGameBtn" class="btn menu-btn">🎮 Начать игру</button>
-                <button id="upgradesBtn" class="btn menu-btn">⚡ Улучшения</button>
-                <button id="leaderboardBtn" class="btn menu-btn">🏆 Таблица лидеров</button>
-                <button id="dailyQuestsBtn" class="btn menu-btn">📅 Ежедневные задания</button>
+            <div class="menu-header">
+                <img src="https://raw.githubusercontent.com/Gabryelf/Atlas-Assets/main/docs/images/fantasy/ui/logo.png" alt="Логотип" onerror="this.innerHTML='🏰 Замок Защитник'">
+            </div>
+            
+            <div class="player-info" id="playerInfo">
+                <div>🏰 Игрок</div>
+                <div class="resources" id="menuResources">
+                    <span>🪵 0</span>
+                    <span>🪨 0</span>
+                    <span>⛏️ 0</span>
+                    <span>🪙 0</span>
+                </div>
+            </div>
+
+            <!-- Карусель уровней -->
+            <div id="levelCarousel">
+                <div class="level-display" id="levelDisplay">
+                    <img src="" alt="Уровень" id="levelImage">
+                    <div class="level-number" id="levelNumber">Уровень 1</div>
+                    <div class="level-status" id="levelStatus">✅ Открыт</div>
+                    <div class="level-lock" id="levelLock" style="display:none;">🔒</div>
+                </div>
+                
+                <div class="level-nav">
+                    <button id="prevLevelBtn" class="nav-btn">◀</button>
+                    <span class="level-indicator" id="levelIndicator">1 / 5</span>
+                    <button id="nextLevelBtn" class="nav-btn">▶</button>
+                </div>
+                
+                <button id="startLevelBtn" class="btn">⚔️ Начать битву</button>
+            </div>
+
+            <!-- Кнопки меню внизу -->
+            <div class="menu-bottom">
+                <button id="startGameBtn" class="menu-btn" title="Играть">⚔️</button>
+                <button id="upgradesBtn" class="menu-btn" title="Улучшения">⚡</button>
+                <button id="leaderboardBtn" class="menu-btn" title="Лидеры">🏆</button>
+                <button id="dailyQuestsBtn" class="menu-btn" title="Задания">📅</button>
             </div>
         </div>
 
@@ -57,6 +87,12 @@
                     <div class="hud-item">
                         <div class="hud-icon">🌊</div>
                         <div id="waveValue" class="hud-value">1</div>
+                    </div>
+                    
+                    <!-- Кнопка управления скоростью -->
+                    <div id="speedControl">
+                        <span class="speed-icon">⏩</span>
+                        <span class="speed-value">1x</span>
                     </div>
                 </div>
             </div>
@@ -144,7 +180,31 @@
             </div>
         </div>
 
-        <!-- Экран окончания игры -->
+        <!-- Экран победы -->
+        <div id="victoryScreen" class="screen hidden">
+            <h2>🎉 ПОБЕДА!</h2>
+            <div class="victory-stats">
+                <p>Уровень пройден!</p>
+                <div class="reward-display">
+                    <!-- Награды добавляются динамически -->
+                </div>
+            </div>
+            <button id="claimVictoryReward" class="btn">🏆 Забрать награду</button>
+        </div>
+
+        <!-- Экран поражения -->
+        <div id="defeatScreen" class="screen hidden">
+            <h2>💀 ПОРАЖЕНИЕ</h2>
+            <div class="victory-stats">
+                <p>Попробуйте снова!</p>
+                <div class="reward-display">
+                    <!-- Награды добавляются динамически -->
+                </div>
+            </div>
+            <button id="claimDefeatReward" class="btn">🔄 Забрать утешительный приз</button>
+        </div>
+
+        <!-- Экран окончания игры (старый) -->
         <div id="gameOverScreen" class="screen hidden">
             <h2>💀 ЗАМОК ПАЛ!</h2>
             <div class="game-over-stats">
@@ -162,8 +222,9 @@
 
     <!-- Подключаем Яндекс SDK -->
     <script src="https://yandex.ru/games/sdk/v2"></script>
-    <!-- Подключаем конфиг ПЕРВЫМ -->
+    <!-- Подключаем конфиги -->
     <script src="js/config/GameConfig.js"></script>
+    <script src="js/config/LevelConfig.js"></script>
     <!-- Подключаем утилиты -->
     <script src="js/utils/helpers.js"></script>
     <script src="js/utils/SpriteLoader.js"></script>
@@ -172,7 +233,7 @@
     <script src="js/entities/Enemy.js"></script>
     <script src="js/entities/Projectile.js"></script>
     <script src="js/entities/Defender.js"></script>
-    <script src="js/entities/Tower.js"></script
+    <script src="js/entities/Tower.js"></script>
     <!-- Подключаем менеджеры -->
     <script src="js/managers/WaveManager.js"></script>
     <script src="js/managers/UIManager.js"></script>
