@@ -2,23 +2,20 @@ class SpriteLoader {
     constructor() {
         this.cache = new Map();
         this.loadingPromises = new Map();
-        this.failedUrls = new Set(); // Запоминаем неудачные загрузки
+        this.failedUrls = new Set();
     }
 
     loadSprite(url, element, fallbackEmoji, mirror = false) {
-        // Если URL не указан или уже был ошибкой
         if (!url || this.failedUrls.has(url)) {
             this.applyFallback(element, fallbackEmoji, mirror);
             return Promise.reject('Invalid or failed URL');
         }
 
-        // Если уже в кэше и изображение загружено
         if (this.cache.has(url)) {
             this.applySprite(element, url, fallbackEmoji, mirror);
             return Promise.resolve();
         }
 
-        // Если уже загружается, ждем
         if (this.loadingPromises.has(url)) {
             return this.loadingPromises.get(url).then(() => {
                 this.applySprite(element, url, fallbackEmoji, mirror);
@@ -27,9 +24,9 @@ class SpriteLoader {
             });
         }
 
-        // Загружаем новое изображение
         const loadPromise = new Promise((resolve, reject) => {
             const img = new Image();
+            img.crossOrigin = 'anonymous';
             
             img.onload = () => {
                 console.log(`✅ Sprite loaded: ${url}`);
@@ -48,8 +45,6 @@ class SpriteLoader {
             };
             
             img.src = url;
-            // Добавляем кросс-оригин, если нужно
-            img.crossOrigin = 'anonymous';
         });
 
         this.loadingPromises.set(url, loadPromise);
@@ -58,28 +53,31 @@ class SpriteLoader {
 
     applySprite(element, url, fallbackEmoji, mirror) {
         const img = this.cache.get(url);
-        if (img && img.complete) {
+        if (img && img.complete && img.naturalWidth > 0) {
+            // Очищаем элемент от эмодзи
+            element.innerHTML = '';
             element.style.backgroundImage = `url('${url}')`;
             element.style.backgroundSize = 'contain';
             element.style.backgroundRepeat = 'no-repeat';
             element.style.backgroundPosition = 'center';
+            element.style.backgroundColor = 'transparent';
+            element.style.border = 'none';
             
-            // Отзеркаливание для врагов (они идут справа налево)
             if (mirror) {
                 element.style.transform = 'scaleX(-1)';
             } else {
                 element.style.transform = '';
             }
-            
-            element.innerHTML = '';
         } else {
             this.applyFallback(element, fallbackEmoji, mirror);
         }
     }
 
     applyFallback(element, fallbackEmoji, mirror) {
-        element.style.backgroundImage = 'none';
         element.innerHTML = fallbackEmoji || '👾';
+        element.style.backgroundImage = 'none';
+        element.style.backgroundColor = 'transparent';
+        element.style.border = 'none';
         
         if (mirror) {
             element.style.transform = 'scaleX(-1)';
@@ -89,5 +87,4 @@ class SpriteLoader {
     }
 }
 
-// Глобальный экземпляр загрузчика спрайтов
 window.spriteLoader = new SpriteLoader();

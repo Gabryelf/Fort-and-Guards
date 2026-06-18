@@ -1,9 +1,7 @@
 class Castle {
     constructor(game) {
         this.game = game;
-        
         this.config = GameConfig.castle;
-        
         this.health = this.config.baseHealth;
         this.maxHealth = this.config.baseHealth;
         this.damage = this.config.baseDamage;
@@ -12,21 +10,27 @@ class Castle {
         this.attackCooldown = 0;
         this.criticalChance = this.config.criticalChance;
         this.criticalMultiplier = this.config.criticalMultiplier;
-        
         this.element = document.getElementById('castle');
         this.spriteUrl = this.config.sprite;
-        
-        // Загружаем спрайт замка
-        this.loadSprite();
-        
         this.towers = [];
         this.maxTowers = this.config.maxTowers;
         
+        // Загружаем спрайт замка с правильной обработкой
+        this.loadSprite();
         this.createAttackRangeVisual();
+        
+        // Добавляем начальные башни
+        setTimeout(() => {
+            this.addTower();
+            this.addTower();
+        }, 100);
     }
 
     loadSprite() {
         if (window.spriteLoader && this.spriteUrl) {
+            // Убеждаемся что элемент пустой перед загрузкой
+            this.element.innerHTML = '';
+            this.element.style.backgroundImage = 'none';
             window.spriteLoader.loadSprite(this.spriteUrl, this.element, '🏰', false);
         } else {
             this.element.innerHTML = '🏰';

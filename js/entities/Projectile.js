@@ -4,20 +4,30 @@ class Projectile {
         this.source = source;
         this.target = target;
         
-        // Определяем характеристики снаряда
+        // Определяем характеристики снаряда в зависимости от источника
         if (source instanceof Castle) {
             this.damage = source.damage;
             this.isCritical = Math.random() < source.criticalChance;
             if (this.isCritical) {
                 this.damage *= source.criticalMultiplier;
             }
-            this.emoji = this.isCritical ? '💥' : '⚔️';
+            this.emoji = this.isCritical ? '💥' : '💫';
             this.color = this.isCritical ? '#ff0000' : '#4cc9f0';
-        } else {
-            this.damage = source.damage;
+        } else if (source instanceof Tower) {
+            // Снаряд от башни
+            this.damage = source.damage || 10;
             this.isCritical = Math.random() < 0.1;
-            this.emoji = this.isCritical ? '💫' : '🏹';
+            if (this.isCritical) {
+                this.damage *= 2;
+            }
+            this.emoji = this.isCritical ? '💥' : '💫';
             this.color = source.side === 'left' ? '#ffaa00' : '#4cc9f0';
+        } else {
+            // Защитники
+            this.damage = source.damage || 5;
+            this.isCritical = Math.random() < 0.1;
+            this.emoji = this.isCritical ? '💥' : '💫';
+            this.color = '#ffaa00';
         }
         
         this.speed = 500;
@@ -27,6 +37,9 @@ class Projectile {
             const sourceRect = source.getBoundingRect();
             this.x = sourceRect.x + sourceRect.width;
             this.y = sourceRect.y + sourceRect.height / 2;
+        } else if (source instanceof Tower) {
+            this.x = source.x + source.width / 2;
+            this.y = source.y + source.height / 2;
         } else {
             this.x = source.x + source.width / 2;
             this.y = source.y + source.height / 2;

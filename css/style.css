@@ -336,11 +336,11 @@ body {
 /* ========== ЗАМОК ========== */
 #castle {
     position: absolute;
-    left: 5%;
+
     top: 50%;
     transform: translateY(-50%);
-    width: 120px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     background: linear-gradient(135deg, #8B4513, #A0522D, #8B4513);
     border: 4px solid #5D4037;
     border-radius: 15px 0 0 15px;

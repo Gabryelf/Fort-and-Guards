@@ -6,11 +6,11 @@ class Tower {
         this.y = y;
         this.side = side;
         
-        // Конфиг башни
+        // Башня получает характеристики от замка
         this.damage = game?.castle?.damage || 10;
         this.attackRange = game?.castle?.attackRange || 250;
         this.attackSpeed = game?.castle?.attackSpeed || 1;
-        this.attackCooldown = Math.random() * 0.2; // Быстрый старт
+        this.attackCooldown = 0;
         
         this.spriteUrl = GameConfig.towers?.sprite;
         this.emoji = side === 'left' ? '🏯' : '🏰';
@@ -33,14 +33,14 @@ class Tower {
         this.element.style.fontSize = '30px';
         this.element.style.background = 'none';
         this.element.style.border = 'none';
-        
-        // Показываем эмодзи как запасной вариант
-        this.element.style.color = this.side === 'left' ? '#ffaa00' : '#4cc9f0';
-        this.element.innerHTML = this.emoji;
+        this.element.style.pointerEvents = 'none';
         
         // Загружаем спрайт
         if (window.spriteLoader && this.spriteUrl) {
+            this.element.innerHTML = '';
             window.spriteLoader.loadSprite(this.spriteUrl, this.element, this.emoji, false);
+        } else {
+            this.element.innerHTML = this.emoji;
         }
         
         if (this.game?.uiManager?.gameField) {
@@ -59,30 +59,26 @@ class Tower {
         const target = this.findTarget();
         if (target && this.attackCooldown <= 0) {
             this.attack(target);
+            // Сбрасываем кулдаун на основе скорости атаки
             this.attackCooldown = 1 / this.attackSpeed;
         }
     }
 
     attack(target) {
-        if (!this.game || !target) return;
+        if (!this.game || !target || target.isDead) return;
         
-        if (window.Projectile) {
-            try {
-                const projectile = new Projectile(this.game, this, target);
-                this.game.projectiles.push(projectile);
-                
-                // Визуальный эффект
+        // Создаем снаряд от башни
+        const projectile = new Projectile(this.game, this, target);
+        this.game.projectiles.push(projectile);
+        
+        // Визуальный эффект
+        if (this.element) {
+            this.element.classList.add('attacking');
+            setTimeout(() => {
                 if (this.element) {
-                    this.element.classList.add('attacking');
-                    setTimeout(() => {
-                        if (this.element) {
-                            this.element.classList.remove('attacking');
-                        }
-                    }, 200);
+                    this.element.classList.remove('attacking');
                 }
-            } catch (error) {
-                console.error('Error creating projectile from tower:', error);
-            }
+            }, 200);
         }
     }
 
@@ -96,7 +92,6 @@ class Tower {
             if (enemy.isDead) return;
             
             const distance = this.calculateDistance(enemy);
-            // Проверяем, что враг в радиусе атаки
             if (distance < this.attackRange && distance < closestDistance) {
                 closestEnemy = enemy;
                 closestDistance = distance;
